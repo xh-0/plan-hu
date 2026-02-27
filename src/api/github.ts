@@ -1,16 +1,22 @@
 const OWNER = 'xh-0'
 const REPO = 'plan-hu'
-const TOKEN = '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'
 
-const BASE = `https://api.github.com/repos/${OWNER}/${REPO}`
+const BASE = `/api/github/repos/${OWNER}/${REPO}`
 
 const headers = {
-  Authorization: `Bearer ${TOKEN}`,
-  Accept: 'application/vnd.github+json'
+  Accept: 'application/vnd.github+json',
+  'Cache-Control': 'no-cache',
+  'Pragma': 'no-cache',
+  'Expires': '0'
 }
 
 export const request = async (url: string, options?: RequestInit) => {
-  const res = await fetch(`${BASE}${url}`, {
+  // 添加时间戳参数以绕过缓存
+  const timestamp = new Date().getTime()
+  const separator = url.includes('?') ? '&' : '?'
+  const urlWithCacheBuster = `${url}${separator}t=${timestamp}`
+
+  const res = await fetch(`${BASE}${urlWithCacheBuster}`, {
     headers,
     ...options
   })
